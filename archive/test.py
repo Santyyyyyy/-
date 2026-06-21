@@ -100,7 +100,6 @@ screen.fill((30, 30, 30))
 
 
 my_ball=ballphysics.Ball(ball_x,ball_y)
-santy_ball=ballphysics.Ball(600,0)
 
 while running:
     keys = pygame.key.get_pressed()
@@ -127,10 +126,10 @@ while running:
           elif state == "menu2":
             if player1_rect.collidepoint(event.pos):
               rival_selected = messi
-              state = "game"
+              state = "menu2"
             elif player2_rect.collidepoint(event.pos):
               rival_selected = cris
-              state = "game"
+              state = "menu2"
                
             elif player3_rect.collidepoint(event.pos):
               #player_pos = neymar
@@ -201,14 +200,11 @@ while running:
       
       if state == "game":
             my_ball.bouncing()
-            santy_ball.bouncing()
             my_ball.hitPlayer(player_selected.rect)
             my_ball.hitPlayer(rival_selected.rect)
-            santy_ball.hitPlayer(player_selected.rect)
-            santy_ball.hitPlayer(rival_selected.rect)
 
 
-            for ball in (my_ball, santy_ball):
+            for ball in (my_ball):
               if ball.ball_x + ball.radius < 0:
                 rival_score += 1
                 reset_ball(ball)
@@ -228,13 +224,12 @@ while running:
         pygame.draw.rect(screen, (255, 230, 0), start_rect)
         text = font.render("Start", True, (255, 255, 255))
         screen.blit(text, text.get_rect(center=start_rect.center))
-    
+
     ##MENU
     if state == "menu1":
       screen.fill((0, 255, 255))
       pygame.draw.rect(screen, messi.player_colour, player1_rect)
       pygame.draw.rect(screen, cris.player_colour, player2_rect)
-      #pygame.draw.rect(screen, (0, 255, 0), player3_rect)
       
     if player_selected is None:
         menu_text = font.render("Select player one", True, (0, 0, 0))
@@ -244,8 +239,8 @@ while running:
       pygame.draw.rect(screen, messi.player_colour, player1_rect)
       pygame.draw.rect(screen, cris.player_colour, player2_rect)
       #pygame.draw.rect(screen, (0, 255, 0), player3_rect)
-      if player_selected is None:
-        menu_text = font.render("Select player one", True, (0, 0, 0))
+      if rival_selected is None:
+        menu_text = font.render("Select player two", True, (0, 0, 0))
 
 
     
@@ -269,7 +264,6 @@ while running:
       score_text = font.render(f"{player_score} - {rival_score}", True, (0, 0, 0))
       screen.blit(score_text, (300, 20))
       pygame.draw.circle(screen, (255, 255, 250), (my_ball.ball_x, my_ball.ball_y), my_ball.getRedius())
-      pygame.draw.circle(screen, (123, 123, 123), (santy_ball.ball_x,santy_ball.ball_y), santy_ball.getRedius())
     pygame.display.flip()
     clock.tick(60)
 print("Game Over")

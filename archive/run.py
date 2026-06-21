@@ -5,7 +5,7 @@ import os
 
 import ballphysics
 import player
-
+#v1.1
 pygame.init()
 print("Game starting...")
 screen = pygame.display.set_mode((800, 600))
@@ -15,16 +15,15 @@ clock = pygame.time.Clock()
 font = pygame.font.Font(None, 28)
 
 cris_sprite = pygame.transform.scale(
-    pygame.image.load(os.path.join("assets", "cristiano", "cristiano.png")).convert_alpha(),
+    pygame.image.load(os.path.join("assets","cristiano", "cristiano.png")).convert_alpha(),
     (70, 96)
 )
-
 cris_run_sprite = pygame.transform.scale(
-    pygame.image.load(os.path.join("assets", "cristiano", "cristiano_run.png")).convert_alpha(),
+    pygame.image.load(os.path.join("assets","cristiano", "cristiano_run.png")).convert_alpha(),
     (70, 96)
 )
 cris_goal_sprite = pygame.transform.scale(
-    pygame.image.load(os.path.join("assets", "cristiano", "cristiano_goal.png")).convert_alpha(),
+    pygame.image.load(os.path.join("assets","cristiano", "cristiano_goal.png")).convert_alpha(),
     (70, 96)
 )
 messi_sprite = pygame.transform.scale(
@@ -128,16 +127,14 @@ while running:
             if player1_rect.collidepoint(event.pos):
               rival_selected = messi
               state = "game"
+              
             elif player2_rect.collidepoint(event.pos):
               rival_selected = cris
               state = "game"
                
             elif player3_rect.collidepoint(event.pos):
               #player_pos = neymar
-            
-              
-
-                state = "game"
+              pass
          
     #PLAYER MOVILITY & PHYSICS     
     if state == "game":
@@ -201,14 +198,11 @@ while running:
       
       if state == "game":
             my_ball.bouncing()
-            santy_ball.bouncing()
             my_ball.hitPlayer(player_selected.rect)
             my_ball.hitPlayer(rival_selected.rect)
-            santy_ball.hitPlayer(player_selected.rect)
-            santy_ball.hitPlayer(rival_selected.rect)
 
 
-            for ball in (my_ball, santy_ball):
+            for ball in (my_ball):
               if ball.ball_x + ball.radius < 0:
                 rival_score += 1
                 reset_ball(ball)
@@ -235,23 +229,12 @@ while running:
       pygame.draw.rect(screen, messi.player_colour, player1_rect)
       pygame.draw.rect(screen, cris.player_colour, player2_rect)
       #pygame.draw.rect(screen, (0, 255, 0), player3_rect)
-      
-    if player_selected is None:
-        menu_text = font.render("Select player one", True, (0, 0, 0))
-
-    if state == "menu2":
-      screen.fill((0, 255, 255))
-      pygame.draw.rect(screen, messi.player_colour, player1_rect)
-      pygame.draw.rect(screen, cris.player_colour, player2_rect)
-      #pygame.draw.rect(screen, (0, 255, 0), player3_rect)
-      if player_selected is None:
-        menu_text = font.render("Select player one", True, (0, 0, 0))
-
-
     
     ##IN GAME
     if state == "game":
+      #screen.fill((0,255,255))
       screen.blit(stadium_background, (0, 0))
+      pygame.draw.rect(screen, player_selected.player_colour, player_selected.rect)
       if cris_goal_timer > 0:
         current_cris_sprite = cris_goal_sprite
       elif cris_is_running:
@@ -259,14 +242,9 @@ while running:
       else:
         current_cris_sprite = cris_sprite
 
-      for selected_player in (player_selected, rival_selected):
-        if selected_player == cris:
-          screen.blit(current_cris_sprite, cris.rect)
-        else:
-          pygame.draw.rect(screen, selected_player.player_colour, selected_player.rect)
-
-      screen.blit(grass_layer, (0, floor.top))
-      score_text = font.render(f"{player_score} - {rival_score}", True, (0, 0, 0))
+      screen.blit(current_cris_sprite, cris.rect)
+      pygame.draw.rect(screen, (50, 255, 50), floor)
+      score_text = font.render(f"{player_selected.name} {player_score} - {rival_selected.name} {rival_score}", True, (0, 0, 0))
       screen.blit(score_text, (300, 20))
       pygame.draw.circle(screen, (255, 255, 250), (my_ball.ball_x, my_ball.ball_y), my_ball.getRedius())
       pygame.draw.circle(screen, (123, 123, 123), (santy_ball.ball_x,santy_ball.ball_y), santy_ball.getRedius())
