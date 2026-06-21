@@ -95,7 +95,7 @@ while running:
         
       if keys[pygame.K_SPACE] or keys[pygame.K_UP] and player.bottom >= floor.top:
         player_speed_y = jump_strength
-        player.y += player_speed_y
+        player.y += player_speed_y 
     #PHYSICS     
     ##PLAYER PHYSICS
       if player.bottom >= floor.top:
