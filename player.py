@@ -1,7 +1,7 @@
 import pygame
 
 class Player:
-    def __init__(self, name, start_x, start_y, player_colour,floor_pos):
+    def __init__(self, name, start_x, start_y, player_colour,floor_pos, width=70, height=50):
         self.name=name
         self.start_x =start_x
         self.start_y = start_y
@@ -11,4 +11,4 @@ class Player:
         self.jump_strength = -10
         self.player_x = 0
         self.gravity = 1
-        self.rect = pygame.Rect(start_x, start_y, 70, 50)
+        self.rect = pygame.Rect(start_x, start_y, width, height)

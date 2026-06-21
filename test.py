@@ -13,6 +13,19 @@ print("Window created")
 pygame.display.set_caption("Event Handling")
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 28)
+
+cris_sprite = pygame.transform.scale(
+    pygame.image.load(os.path.join("assets", "cristiano.png")).convert_alpha(),
+    (70, 96)
+)
+cris_run_sprite = pygame.transform.scale(
+    pygame.image.load(os.path.join("assets", "cristiano_run.png")).convert_alpha(),
+    (70, 96)
+)
+cris_goal_sprite = pygame.transform.scale(
+    pygame.image.load(os.path.join("assets", "cristiano_goal.png")).convert_alpha(),
+    (70, 96)
+)
     
 player_pos = None
 #MENU & START SCREEN
@@ -40,7 +53,7 @@ gravity = 1
 
 messi = player.Player('messi',650,200,(0,0,255),floor.top)
 #cris = pygame.Rect(start_x,start_y, 50, 50)
-cris = player.Player('bicho',50,200,(255,0,0),floor.top)
+cris = player.Player('bicho',50,200,(255,0,0),floor.top,70,96)
 #neymar = pygame.Rect(start_x,start_y, 50, 50)
 
 ##BALL
@@ -49,6 +62,8 @@ ball_x = 300
 
 cris_score = 0
 messi_score = 0
+cris_goal_timer = 0
+cris_is_running = False
 
 def reset_ball(ball):
   ball.ball_x = 400
@@ -92,6 +107,7 @@ while running:
          
     #PLAYER MOVILITY & PHYSICS     
     if state == "game":
+      cris_is_running = False
       
       #PLAYER MOVILITY
       if keys[pygame.K_LEFT] and messi.rect.left > 0:
@@ -109,9 +125,11 @@ while running:
 
       if keys[pygame.K_a] and cris.rect.left > 0:
         cris.rect.x -= 5
+        cris_is_running = True
           
       if keys[pygame.K_d] and cris.rect.right < 800:
         cris.rect.x += 5
+        cris_is_running = True
 
       if keys[pygame.K_w]: 
         cris.rect.y -= 50   
@@ -155,7 +173,11 @@ while running:
         reset_ball(ball)
       elif ball.ball_x - ball.radius > 800:
         cris_score += 1
+        cris_goal_timer = 90
         reset_ball(ball)
+
+    if cris_goal_timer > 0:
+      cris_goal_timer -= 1
     
       
       
@@ -177,7 +199,14 @@ while running:
     if state == "game":
       screen.fill((0,255,255))
       pygame.draw.rect(screen, messi.player_colour, messi.rect)
-      pygame.draw.rect(screen, cris.player_colour, cris.rect)
+      if cris_goal_timer > 0:
+        current_cris_sprite = cris_goal_sprite
+      elif cris_is_running:
+        current_cris_sprite = cris_run_sprite
+      else:
+        current_cris_sprite = cris_sprite
+
+      screen.blit(current_cris_sprite, cris.rect)
       pygame.draw.rect(screen, (50, 255, 50), floor)
       score_text = font.render(f"Cris {cris_score} - Messi {messi_score}", True, (0, 0, 0))
       screen.blit(score_text, (300, 20))
