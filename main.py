@@ -223,14 +223,14 @@ while running:
       
       
             #for ball in (my_ball, santy_ball):
-            if my_ball.ball_x + my_ball.radius < 0:
+            if my_ball.ball_x + my_ball.radius > 800:
               rival_score += 1
               if rival_selected == cris:
                 cris_goal_timer = 90
               elif rival_selected == messi:
                 messi_goal_timer = 90
               reset_ball(my_ball)
-            elif my_ball.ball_x - my_ball.radius > 800:
+            elif my_ball.ball_x - my_ball.radius < 0:
               player_score += 1
               if player_selected == cris:
                 cris_goal_timer = 90
@@ -254,17 +254,7 @@ while running:
         pygame.draw.rect(screen, (255, 230, 0), start_rect)
         text = font.render("Start", True, (255, 255, 255))
         screen.blit(text, text.get_rect(center=start_rect.center))
-    
-    ##MENU
-    #if state == "menu1":
-      #screen.fill((0, 255, 255))
-      #pygame.draw.rect(screen, messi.player_colour, player1_rect)
-      #pygame.draw.rect(screen, cris.player_colour, player2_rect)
-      
-      #if player_selected is None:
-          #menu_text = font.render("Select player one", True, (0, 0, 0))
-
-    
+        
     if game_time_left <= 0:
         state = "game_over"
     ##IN GAME
@@ -303,7 +293,7 @@ while running:
       #print(f"Delta time: {dt:.4f} seconds")
     
       screen.blit(grass_layer, (0, floor.top))
-      score_text = font.render(f"{player_score} - {rival_score}", True, (0, 0, 0))
+      score_text = font.render(f"{rival_score} - {player_score}", True, (0, 0, 0))
       screen.blit(score_text, (300, 20))
       timer_text = font.render(f"Time: {int(game_time_left)}", True, (0, 0, 0))
       screen.blit(timer_text, (10, 10))
@@ -312,7 +302,7 @@ while running:
     if state == "game_over":
         screen.fill((0, 0, 0))
         game_over_text = font.render("Game Over", True, (255, 255, 255))
-        final_score_text = font.render(f"Final Score: {player_score} - {rival_score}", True, (255, 255, 255))
+        final_score_text = font.render(f"Final Score: {rival_score} - {player_score}", True, (255, 255, 255))
         screen.blit(game_over_text, game_over_text.get_rect(center=(400, 250)))
         screen.blit(final_score_text, final_score_text.get_rect(center=(400, 300)))
     
