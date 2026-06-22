@@ -21,6 +21,14 @@ pygame.display.set_caption("Event Handling")
 clock = pygame.time.Clock()
 font = pygame.font.Font(None, 28)
 
+bg_music_path = os.path.join("assets", "sounds", "Pitbull.mp3")
+try:
+    pygame.mixer.music.load(bg_music_path)
+    pygame.mixer.music.set_volume(0.3)
+    pygame.mixer.music.play(-1)
+except Exception:
+    pass
+
 cris_right_sprite = pygame.transform.scale(
     pygame.image.load(os.path.join("assets", "characters", "cristiano", "cris_right.png")).convert_alpha(),
     (PLAYER_WIDTH, PLAYER_HEIGHT)
@@ -288,9 +296,6 @@ while running:
           screen.blit(current_cris_sprite, cris.rect)
         elif selected_player == messi:
           screen.blit(current_messi_sprite, messi.rect)
-    
-      #dt = min(dt, 0.05)
-      #print(f"Delta time: {dt:.4f} seconds")
     
       screen.blit(grass_layer, (0, floor.top))
       score_text = font.render(f"{rival_score} - {player_score}", True, (0, 0, 0))
