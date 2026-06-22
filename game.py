@@ -1,7 +1,7 @@
 import pygame
 import player
 import os
-
+import ballphysics
 class GamePhase:
     def __init__(self, screen, clock):
         self.screen = screen
@@ -10,103 +10,149 @@ class GamePhase:
         self.selected_index = 0
         self.selected_player1 = None
         self.selected_player2 = None
+        self.font = pygame.font.Font(None, 28)
 
-        cris_right_sprite = pygame.transform.scale(
+        self.cris_right_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "cristiano", "cris_right.png")).convert_alpha(),
             (70, 96)
         )
-        cris_left_sprite = pygame.transform.scale(
+        self.cris_left_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "cristiano", "cris_left.png")).convert_alpha(),
             (70, 96)
         )
-        cris_run_right_sprite = pygame.transform.scale(
+        self.cris_run_right_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "cristiano", "cris_run_right.png")).convert_alpha(),
             (70, 96)
         )
-        cris_run_left_sprite = pygame.transform.scale(
+        self.cris_run_left_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "cristiano", "cris_run_left.png")).convert_alpha(),
             (70, 96)
         )
-        cris_goal_sprite = pygame.transform.scale(
+        self.cris_goal_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "cristiano", "cris_goal.png")).convert_alpha(),
             (70, 96)
         )
-        messi_right_sprite = pygame.transform.scale(
+        self.messi_right_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "messi", "messi_right.png")).convert_alpha(),
             (70, 96)
         )
-        messi_left_sprite = pygame.transform.scale(
+        self.messi_left_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "messi", "messi_left.png")).convert_alpha(),
             (70, 96)
         )
-        messi_run_right_sprite = pygame.transform.scale(
+        self.messi_run_right_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "messi", "messi_run_right.png")).convert_alpha(),
             (70, 96)
         )
-        messi_run_left_sprite = pygame.transform.scale(
+        self.messi_run_left_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "messi", "messi_run_left.png")).convert_alpha(),
             (70, 96)
         )
-        messi_goal_sprite = pygame.transform.scale(
+        self.messi_goal_sprite = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "characters", "messi", "messi_goal.png")).convert_alpha(),
             (70, 96)
         )
-        stadium_background = pygame.transform.scale(
+        self.stadium_background = pygame.transform.scale(
             pygame.image.load(os.path.join("assets", "backgrounds", "stadium_background2.jpg")).convert(),
             (800, 600)
         )
-        grass_layer = pygame.Surface((800, 100), pygame.SRCALPHA)
-        grass_layer.fill((50, 255, 50, 30))
+        self.grass_layer = pygame.Surface((800, 100), pygame.SRCALPHA)
+        self.grass_layer.fill((50, 255, 50, 30))
             
-        player_pos = None
-        #MENU & START SCREEN
-        start_rect = pygame.Rect(300, 250, 200, 60)
-        player1_rect = pygame.Rect(150,350, 90, 90)
-        player2_rect = pygame.Rect(240,350, 90, 90)
-        player3_rect = pygame.Rect(330,350, 90, 90)
+        self.player_pos = None
 
         #IN GAME
 
         ##STRUCTURE
-        floor = pygame.Rect(0, 500, 800, 200)
+        self.floor = pygame.Rect(0, 500, 800, 200)
 
         ##PLAYER
-        start_x =50
-        start_y = 200
-        player_colour = (0,0,0)
-        player_y = floor.top
-        player_speed_y = 0
-        jump_strength = -18
-        player_x = 0
-        gravity = 1
+        self.start_x =50
+        self.start_y = 200
+        self.player_colour = (0,0,0)
+        self.player_y = self.floor.top
+        self.player_speed_y = 0
+        self.jump_strength = -18
+        self.player_x = 0
+        self.gravity = 1
 
         ##CHARACTER
 
-        messi = player.Player('messi',650,200,(0,0,255),floor.top,70,96)
-        #cris = pygame.Rect(start_x,start_y, 50, 50)
-        cris = player.Player('bicho',50,200,(255,0,0),floor.top,70,96)
+        self.messi = player.Player('messi',650,200,(0,0,255),self.floor.top,70,96)
+        #cris = pygame.Rect(self.start_x,self.start_y, 50, 50)
+        self.cris = player.Player('bicho',50,200,(255,0,0),self.floor.top,70,96)
         #neymar = pygame.Rect(start_x,start_y, 50, 50)
-        players = [messi, cris]
-        player_selected = None
-        rival_selected = None
+        self.selected_players = [self.messi, self.cris]
+        self.player_selected = None
+        self.rival_selected = None
 
         ##BALL
-        ball_y = 400
-        ball_x = 300
-
-        player_score = 0
-        rival_score = 0
-        cris_goal_timer = 0
-        messi_goal_timer = 0
-        cris_is_running_right = False
-        messi_is_running_right = False
-        cris_is_running_left = False
-        messi_is_running_left = False
-        selected_player_direction = "right"
-        selected_rival_direction = "left"
+        self.ball_y = 400
+        self.ball_x = 300
+        self.my_ball = ballphysics.Ball(self.ball_x, self.ball_y)
+        self.player_score = 0
+        self.rival_score = 0
+        self.cris_goal_timer = 0
+        self.messi_goal_timer = 0
+        self.cris_is_running_right = False
+        self.messi_is_running_right = False
+        self.cris_is_running_left = False
+        self.messi_is_running_left = False
+        self.selected_player_direction = "right"
+        self.selected_rival_direction = "left"
 
     def reset_ball(ball):
         ball.ball_x = 400
         ball.ball_y = 200
         ball.bvel_x = 0
-        ball.bvel_y = -8    
+        ball.bvel_y = -8   
+
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                print("QUIT")
+                return "quit"
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                self.selected_players = None
+                return "quit" 
+
+    def draw(self):
+        print("DRAWING GAME")
+        self.draw_start_screen()
+
+    def draw_start_screen(self):
+        print("DRAWING START SCREEN")
+        self.screen.blit(self.stadium_background, (0, 0))
+        if self.cris_goal_timer > 0:
+            current_cris_sprite = self.cris_goal_sprite
+        elif self.cris_is_running_right:
+            current_cris_sprite = self.cris_run_right_sprite
+        elif self.cris_is_running_left:
+            current_cris_sprite = self.cris_run_left_sprite
+        else:
+            if self.selected_player_direction == "right":
+                current_cris_sprite = self.cris_right_sprite
+            elif self.selected_player_direction == "left":
+                current_cris_sprite = self.cris_left_sprite
+        if self.messi_goal_timer > 0:
+            current_messi_sprite = self.messi_goal_sprite
+        elif self.messi_is_running_right:
+            current_messi_sprite = self.messi_run_right_sprite
+        elif self.messi_is_running_left:
+            current_messi_sprite = self.messi_run_left_sprite
+        else:
+            if self.selected_rival_direction == "right":
+                current_messi_sprite = self.messi_right_sprite
+            elif self.selected_rival_direction == "left":
+                current_messi_sprite = self.messi_left_sprite
+
+        for selected_player in (self.player_selected, self.rival_selected):
+            if selected_player == self.cris:
+                self.screen.blit(current_cris_sprite, self.cris.rect)
+            elif selected_player == self.messi:
+                self.screen.blit(current_messi_sprite, self.messi.rect)
+
+        self.screen.blit(self.grass_layer, (0, self.floor.top))
+        score_text = self.font.render(f"{self.player_score} - {self.rival_score}", True, (0, 0, 0))
+        self.screen.blit(score_text, (300, 20))
+        pygame.draw.circle(self.screen, (255, 255, 250), (self.my_ball.ball_x, self.my_ball.ball_y), self.my_ball.getRedius())

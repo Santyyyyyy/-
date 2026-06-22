@@ -4,12 +4,14 @@ import os
 from config import WIDTH, HEIGHT, BLACK, WHITE, GRAY, BUTTON_FONT, SMALL_FONT, stadium_bg
 from init_phase import InitPhase
 from game import GamePhase
+
 pygame.init()
 pygame.mixer.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("World Cup - Character Selection")
 clock = pygame.time.Clock()
+font = pygame.font.Font(None, 28)
 
 bg_music_path = os.path.join("assets", "sounds", "Pitbull.mp3")
 try:
@@ -39,22 +41,21 @@ while running:
             init_phase.draw()
 
     elif state == "playing":
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                init_phase = InitPhase(screen, clock)
-                selected_players = None
-                state = "init"
+        print("PLAYING")
+        result = game_phase.handle_events()
+        if result == "quit":
+            running = False
+        else:
+            #game_phase.update()
+            game_phase.draw()
 
-        if stadium_bg:
-            screen.blit(stadium_bg, (0, 0))
+      
 
-        if selected_players:
-            p1, p2 = selected_players
-            info = SMALL_FONT.render(
-                f"{p1['flag']} {p1['name']}  VS  {p2['flag']} {p2['name']}", True, WHITE)
-            screen.blit(info, info.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 60)))
+        #if selected_players:
+        #    p1, p2 = selected_players
+        #    info = SMALL_FONT.render(
+        #        f"{p1['flag']} {p1['name']}  VS  {p2['flag']} {p2['name']}", True, WHITE)
+        #    screen.blit(info, info.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 60)))
 
     pygame.display.flip()
     clock.tick(60)
