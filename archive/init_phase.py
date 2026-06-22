@@ -1,5 +1,5 @@
 import pygame
-from config import (
+from archive.config import (
     WIDTH, HEIGHT, WHITE, BLACK, YELLOW, GOLD, GRAY, DARK_GRAY,
     SELECTED_COLOR, stadium_bg,
     TITLE_FONT, BUTTON_FONT, SMALL_FONT, NAME_FONT, CHARACTERS,
