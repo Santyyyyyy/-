@@ -60,7 +60,7 @@ stadium_background = pygame.transform.scale(
 )
 grass_layer = pygame.Surface((800, 100), pygame.SRCALPHA)
 grass_layer.fill((50, 255, 50, 30))
-    
+     
 player_pos = None
 #MENU & START SCREEN
 start_rect = pygame.Rect(300, 250, 200, 60)
@@ -85,9 +85,9 @@ gravity = 1
 
 ##CHARACTER
 
-messi = player.Player('messi',650,200,(0,0,255),floor.top,70,96)
+messi = player.Player('messi',50,200,(0,0,255),floor.top,70,96)
 #cris = pygame.Rect(start_x,start_y, 50, 50)
-cris = player.Player('bicho',50,200,(255,0,0),floor.top,70,96)
+cris = player.Player('bicho',650,200,(255,0,0),floor.top,70,96)
 #neymar = pygame.Rect(start_x,start_y, 50, 50)
 players = [messi, cris]
 player_selected = None
@@ -121,10 +121,10 @@ screen.fill((30, 30, 30))
 
 
 my_ball=ballphysics.Ball(ball_x,ball_y)
-
-
+game_time_left = 15.0
 
 while running:
+    #print(f"Initial delta time: {dt} seconds" if 'dt' in locals() else "Initial delta time: calculating...")
     keys = pygame.key.get_pressed()
     if keys[pygame.K_ESCAPE]:
         running = False
@@ -132,28 +132,35 @@ while running:
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
           running = False
-
+    
       if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
           if state == "main_screen":
             if start_rect.collidepoint(event.pos):
-                state = "menu1"
+                player_selected = cris
+                rival_selected = messi
+                state = "game"
                 
-          elif state == "menu1":
-            if player1_rect.collidepoint(event.pos):
-              player_selected = messi
-              state = "menu2"
-            elif player2_rect.collidepoint(event.pos):
-              player_selected = cris
-              state = "menu2"
-
-          elif state == "menu2":
-            if player1_rect.collidepoint(event.pos):
-              rival_selected = messi
-              state = "game"
-            elif player2_rect.collidepoint(event.pos):
-              rival_selected = cris
-              state = "game"
-         
+         # elif state == "menu1":
+          #  if player1_rect.collidepoint(event.pos):
+           #   player_selected = messi
+           #   state = "menu2"
+           # elif player2_rect.collidepoint(event.pos):
+           #   player_selected = cris
+           #   state = "menu2"
+          
+          #elif state == "menu2":
+           # if player1_rect.collidepoint(event.pos):
+            #  rival_selected = messi
+             # state = "game"
+             # game_time_left = 15.0  # Reset timer when entering game
+            #elif player2_rect.collidepoint(event.pos):
+             # rival_selected = cris
+             # state = "game"
+             # game_time_left = 15.0  # Reset timer when entering game
+    
+    # Calculate delta time for consistent timing
+    dt = clock.get_time() / 1000.0
+    
     #PLAYER MOVILITY & PHYSICS     
     if state == "game":
       cris_is_running_right = False
@@ -177,10 +184,10 @@ while running:
         elif player_selected == messi:
           messi_is_running_right = True
         selected_player_direction = "right"
-
+      
       if keys[pygame.K_UP]: 
         player_selected.rect.y -= 50  
-
+      
       if keys[pygame.K_a] and rival_selected.rect.left > 0:
         rival_selected.rect.x -= 5
         if rival_selected == cris:
@@ -188,7 +195,7 @@ while running:
         elif rival_selected == messi:
           messi_is_running_left = True
         selected_rival_direction = "left"
-          
+        
       if keys[pygame.K_d] and rival_selected.rect.right < 800:
         rival_selected.rect.x += 5
         if rival_selected == cris:
@@ -196,24 +203,24 @@ while running:
         elif rival_selected == messi:
           messi_is_running_right = True
         selected_rival_direction = "right"
-
+      
       if keys[pygame.K_w]: 
         rival_selected.rect.y -= 50   
-
+      
       # Simple player collision: stop them from overlapping.
       if player_selected.rect.colliderect(rival_selected.rect):
         if player_selected.rect.centerx < rival_selected.rect.centerx:
           player_selected.rect.right = rival_selected.rect.left
         else:
           player_selected.rect.left = rival_selected.rect.right
-     
+      
     #PHYSICS     
     ##PLAYER PHYSICS
       for selected_player in (player_selected, rival_selected):
         if selected_player.rect.bottom >= floor.top:
           selected_player.rect.bottom = floor.top
           selected_player.player_speed_y = 0
-
+  
         selected_player.player_speed_y += selected_player.gravity
         selected_player.rect.y += selected_player.player_speed_y
       
@@ -224,8 +231,8 @@ while running:
             my_ball.hitPlayer(rival_selected.rect)
             #santy_ball.hitPlayer(player_selected.rect)
             #santy_ball.hitPlayer(rival_selected.rect)
-
-
+      
+      
             #for ball in (my_ball, santy_ball):
             if my_ball.ball_x + my_ball.radius < 0:
               rival_score += 1
@@ -241,38 +248,36 @@ while running:
               elif player_selected == messi:
                 messi_goal_timer = 90
               reset_ball(my_ball)
-
+      
             if cris_goal_timer > 0:
               cris_goal_timer -= 1
             if messi_goal_timer > 0:
               messi_goal_timer -= 1
+            
+            # Update game timer
+            game_time_left = max(0.0, game_time_left - dt)
 
-  #GAME STATE
-  ##MAIN SCREEN
+    #GAME STATE
+    ##MAIN SCREEN
     if state == "main_screen":
+        instruction_text = font.render("Player one move with WASD, Player two move with arrow keys", True, (255, 255, 255))
+        screen.blit(instruction_text, instruction_text.get_rect(center=(400, 150)))
         pygame.draw.rect(screen, (255, 230, 0), start_rect)
         text = font.render("Start", True, (255, 255, 255))
         screen.blit(text, text.get_rect(center=start_rect.center))
     
     ##MENU
-    if state == "menu1":
-      screen.fill((0, 255, 255))
-      pygame.draw.rect(screen, messi.player_colour, player1_rect)
-      pygame.draw.rect(screen, cris.player_colour, player2_rect)
+    #if state == "menu1":
+      #screen.fill((0, 255, 255))
+      #pygame.draw.rect(screen, messi.player_colour, player1_rect)
+      #pygame.draw.rect(screen, cris.player_colour, player2_rect)
       
-    if player_selected is None:
-        menu_text = font.render("Select player one", True, (0, 0, 0))
-
-    if state == "menu2":
-      screen.fill((0, 255, 255))
-      pygame.draw.rect(screen, messi.player_colour, player1_rect)
-      pygame.draw.rect(screen, cris.player_colour, player2_rect)
-
-      if player_selected is None:
-        menu_text = font.render("Select player two", True, (0, 0, 0))
-
+      #if player_selected is None:
+          #menu_text = font.render("Select player one", True, (0, 0, 0))
 
     
+    if game_time_left <= 0:
+        state = "game_over"
     ##IN GAME
     if state == "game":
       screen.blit(stadium_background, (0, 0))
@@ -298,18 +303,30 @@ while running:
           current_messi_sprite = messi_right_sprite
         elif selected_rival_direction == "left":
           current_messi_sprite = messi_left_sprite
-
+    
       for selected_player in (player_selected, rival_selected):
         if selected_player == cris:
           screen.blit(current_cris_sprite, cris.rect)
         elif selected_player == messi:
           screen.blit(current_messi_sprite, messi.rect)
-
+    
+      #dt = min(dt, 0.05)
+      #print(f"Delta time: {dt:.4f} seconds")
+    
       screen.blit(grass_layer, (0, floor.top))
       score_text = font.render(f"{player_score} - {rival_score}", True, (0, 0, 0))
       screen.blit(score_text, (300, 20))
+      timer_text = font.render(f"Time: {int(game_time_left)}", True, (0, 0, 0))
+      screen.blit(timer_text, (10, 10))
       pygame.draw.circle(screen, (255, 255, 250), (my_ball.ball_x, my_ball.ball_y), my_ball.getRedius())
       #pygame.draw.circle(screen, (123, 123, 123), (santy_ball.ball_x,santy_ball.ball_y), santy_ball.getRedius())
+    if state == "game_over":
+        screen.fill((0, 0, 0))
+        game_over_text = font.render("Game Over", True, (255, 255, 255))
+        final_score_text = font.render(f"Final Score: {player_score} - {rival_score}", True, (255, 255, 255))
+        screen.blit(game_over_text, game_over_text.get_rect(center=(400, 250)))
+        screen.blit(final_score_text, final_score_text.get_rect(center=(400, 300)))
+    
     pygame.display.flip()
     clock.tick(60)
 print("Game Over")
